@@ -17,11 +17,12 @@ class Prob_Instance:
         return copy.deepcopy(self)
 
 class Job: # 입력 데이터: job (요청)
-    def __init__(self, ID: int, process_time, due_date):
+    def __init__(self, ID: int, process_time, due_date, Pre_Job:list):
         self.id = ID
         self.process_time = process_time
         self.due_date = due_date
         self.tardiness = 0
+        self.pre_job = Pre_Job
 
     def initialize(self):
         self.done = False
