@@ -14,6 +14,7 @@ def random_LoadProb(n):
 
 if __name__ == "__main__":
     random.seed(42)
+
     Sample = module()
     Solution = solver.rule_solver(Sample)
     print('Solved and objective value is ' + str(Solution['Objective']))
