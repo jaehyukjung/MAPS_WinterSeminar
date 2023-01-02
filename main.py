@@ -8,8 +8,7 @@ def random_LoadProb(n):
     random_machine = random.randint(2,3)
 
     ThisProb = module.Prob_Instance()
-    for i in range(random_job):
-        ThisProb.job_list.append(module.Job(i + 1, [random.uniform(4,7), random.uniform(6,14)]))
+
     for i in range(random_machine):
         ThisProb.machine_list.append(module.Machine(i + 1))
 
