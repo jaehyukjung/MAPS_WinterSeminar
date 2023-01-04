@@ -1,6 +1,7 @@
 import random
 import module
 import solver
+import numpy as np
 
 def random_LoadProb(n):
     random.seed(n)

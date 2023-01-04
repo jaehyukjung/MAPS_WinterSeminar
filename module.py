@@ -1,4 +1,5 @@
 import copy
+import random
 
 class Prob_Instance:
     def __init__(self):
@@ -15,7 +16,7 @@ class Prob_Instance:
         return copy.deepcopy(self)
 
 class Job: # 입력 데이터: job (요청)
-    def __init__(self, ID: int, Process_time, Due_date, Release_time, Pre_Job:list, Setup_Status:str, Weight = -1):
+    def __init__(self, ID: int, Process_time, Due_date, Pre_Job:list, Setup_Status:str, Weight = -1,Release_time = -1 ):
         self.id = ID
         self.process_time = Process_time
         self.due_date = Due_date
