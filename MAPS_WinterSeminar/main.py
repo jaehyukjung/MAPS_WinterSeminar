@@ -23,5 +23,3 @@ if __name__ == "__main__":
     Sample = random_LoadProb(n)
     Solution = solver.rule_solver(Sample)
     print('Sum of Comepletion Time is ' + str(Solution['Objective']))
-
-
