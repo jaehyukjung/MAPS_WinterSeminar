@@ -7,7 +7,6 @@ for i in range(a):
 
     num[M] = num[M] * 1.0
 
-    i = 0
     cnt = 0
 
     while True:
