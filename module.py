@@ -20,12 +20,20 @@ class Prob_Instance:
         return copy.deepcopy(self)
 
 class Job: # 입력 데이터: job (요청)
+<<<<<<< HEAD
     def __init__(self, ID: int, Process_time, Due_date, Weight, Release_time,Setup_Status:int, Pre_list:list):
+=======
+    def __init__(self, ID: int, Process_time, Due_date, Weight, Release_time, Setup_Status:str):
+>>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
         self.id = ID
         self.process_time = Process_time
         self.due_date = Due_date
         self.release_date = Release_time
         self.setup = Setup_Status
+<<<<<<< HEAD
+=======
+        # self.pre_job = Pre_Job # 이전에 필요한 작업 리스트 => 머신의 셋업? 에 따라 바뀌는 것도 고려해서 추가해야 할 덧
+>>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
         self.weight = Weight # 가중치
         self.pre_list = Pre_list # 선행작업
 
@@ -35,7 +43,11 @@ class Job: # 입력 데이터: job (요청)
         self.start_time = -1 # 시작 시간
         self.tardiness = -1
 
+    def __repr__(self):
+        return str('Job # ' + str(self.id))
+
 class Machine: # 작업 기계
+<<<<<<< HEAD
     def __init__(self, ID: int, setUpStatus: int):
         self.start_time = None
         self.workSpeedList = None
@@ -43,6 +55,12 @@ class Machine: # 작업 기계
         self.settingTimeMatrix = None
         self.id = ID
         self.setupstatus = setUpStatus
+=======
+    def __init__(self, ID: int, Work_speed, SetUp: str):
+        self.id = ID
+        self.work_speed = Work_speed
+        self.setup = SetUp
+>>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
         self.avail_time = 0 # 시작 가능 시간
 
     def initialize(self):
@@ -57,6 +75,7 @@ class Machine: # 작업 기계
 
     def work(self, target: Job):
         target.done = True
+<<<<<<< HEAD
         self.work_speed = self.workSpeedList[target.setup]
         self.work_time = target.process_time / self.work_speed  # 작업시간
 
@@ -66,6 +85,15 @@ class Machine: # 작업 기계
 
         self.start_time = self.avail_time # set -> setup 후
         target.start_time = self.start_time
+=======
+        self.work_time = target.process_time / self.work_speed
+
+        if self.setup != target.setup:
+            self.setup = target.setup
+            self.avail_time += self.setup_time
+
+        self.start_time = self.avail_time # set -> setup 후
+>>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
         self.avail_time += self.work_time  # 완료시간
         target.tardiness = max(0, self.avail_time - target.due_date)
         self.measures['total_tardiness'] += target.tardiness
