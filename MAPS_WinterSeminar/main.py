@@ -1,7 +1,6 @@
 import random
 import module
 import solver
-import numpy as np
 
 def random_LoadProb(n):
     random.seed(n)
@@ -11,8 +10,8 @@ def random_LoadProb(n):
     ThisProb = module.Prob_Instance()
 
     for i in range(random_job):
-        ThisProb.job_list.append(module.Job(i+1, random.randint(2,8), random.randint(6,14),
-                                            random.randint(1,3), random.randint(0,2), random.choice(module.statusList)))
+        ThisProb.job_list.append(module.Job(i + 1, random.randint(2, 8), random.randint(6, 14),
+                                     random.randint(1, 3), random.randint(0, 2), random.choice(module.statusList)))
     for i in range(random_machine):
         ThisProb.machine_list.append(module.Machine(i + 1,random.choice(module.statusList)))
 
