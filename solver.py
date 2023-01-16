@@ -51,12 +51,12 @@ def rule_solver(instance: Prob_Instance):
     df2 = pd.DataFrame(mch2, columns=date_columns)
 
     # date_columns = ["Start", "Finish"]
-    #
+
     # for col in date_columns:
     #     df1[col] = pd.to_datetime(df1[col], dayfirst=True)
     df1["Diff"] = df1.end_time - df1.start_time
     df2["Diff"] = df2.end_time - df2.start_time
-    #
+
     # print(df1)
     # print(df2)
 

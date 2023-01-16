@@ -5,6 +5,7 @@ import numpy as np
 statusList = [0,1,2]
 statusNum = len(statusList)
 
+
 class Prob_Instance:
     def __init__(self):
         self.objective = 'Makespan'

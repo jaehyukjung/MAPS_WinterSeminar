@@ -24,7 +24,7 @@ def random_LoadProb():
 
 if __name__ == "__main__":
     random.seed(42)
-    n = random.randint(1, 1000)
+
     Sample = random_LoadProb()
     Solution = solver.rule_solver(Sample)
     print('Sum of Comepletion Time is ' + str(Solution['Objective']))
