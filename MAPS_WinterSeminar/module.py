@@ -87,7 +87,7 @@ class Machine: # 작업 기계
         workSpeedList = [np.random.randint(1,4) for i in range(statusNum)]
         self.workSpeedList = workSpeedList
 
-    def GETSETTime(self, previousJob, currentJob: Job): # 기계가 작업할 때 setupTime 계산
+    def GETSETTime(self, previousJob, currentJob: Job): # 기계가 작업할때 setupTime 계산
         return self.settingTimeMatrix[previousJob][currentJob.setup]
 
     def __repr__(self):
