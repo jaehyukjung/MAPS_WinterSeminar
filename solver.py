@@ -3,35 +3,21 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from module import *
 import numpy as np
-import pandas as pd
 
 def rule_solver(instance: Prob_Instance):
     print('Solver Start')
     print('[start time, end time, machine ID, job ID, setup status]')
     solution = {}
     solution["Problem"] = instance.deepcopy()
-<<<<<<< HEAD
     sch_list = []
     total_CompletionTime = 0
-=======
-
-    setup_matrix: list
->>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
 
     job_list = instance.job_list
     job: Job
     for job in job_list:
         job.initialize()
 
-<<<<<<< HEAD
     setup_matrix = settingMatrtix()
-=======
-    setup_matrix = np.random.randint(1, 4, size = (len(job_list),len(job_list)))
-    setup_matrix = np.triu(setup_matrix)
-    setup_matrix += setup_matrix.T - np.diag(setup_matrix.diagonal())
-    setup_matrix = [[0 if i == j else setup_matrix[i][j] for j in range(len(job_list))]for i in range(len(job_list))]
-
->>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
     mach_list = instance.machine_list
     mach: Machine
     for mach in mach_list:
@@ -74,30 +60,11 @@ def rule_solver(instance: Prob_Instance):
     # print(df1)
     # print(df2)
 
-<<<<<<< HEAD
     fig, ax = plt.subplots(figsize=(10, 1))
     plt.barh(y=df1['machine_ID'], width=df1['Diff'], left=df1['start_time'])
     plt.barh(y=df2['machine_ID'], width=df2['Diff'], left=df2['start_time'])
     plt.show()
     fig.savefig('gannt-chart.png', facecolor='white', transparent=False, dpi=600)
-=======
-    mj_matrix = np.random.randint(0, 2, size=(len(job_list), len(mach_list)))
-    workSpeed_matrix = np.random.randint(1, 4, size=(len(job_list), len(mach_list))) # 기계의 각 작업에 대한 작업 속도
-
-    sch_list = []
-    sch_list.append(mach.start_time, mach.avail_time, mach.id, job.id, mach.setup)
-
-    total_CompletionTime = 0
-
-    for mach in mach_list:
-        total_CompletionTime += mach.avail_time
-
-    solution['Objective'] = []
-    solution['Objective'].append(total_CompletionTime)
-    solution['Objective'].append(mach.measures['makespan'])
-
-
->>>>>>> b25e921acd8c3ee661456ffb2a09ad27e4b4bad3
 
     solution['Objective'] = []
     solution['Objective'].append(total_CompletionTime)
