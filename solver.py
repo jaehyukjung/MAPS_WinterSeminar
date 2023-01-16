@@ -32,8 +32,9 @@ def rule_solver(instance: Prob_Instance):
         for job in is_possble_job:
             mach = random.choice(mach_list)
             cur = job
+            setup_time = mach.GETSETTime(previousJob=mach.setupstatus, currentJob=cur)
             mach.work(job)
-            sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setupstatus]) # 스케줄 리스트
+            sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setupstatus, setup_time]) # 스케줄 리스트
 
         for job in not_completed_jobs:
             for completed_job in is_possble_job:
@@ -46,28 +47,28 @@ def rule_solver(instance: Prob_Instance):
     mch1 = list(filter(lambda x: x[2]==1, sch_list))
     mch2 = list(filter(lambda x: x[2]==2, sch_list))
 
-    date_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status']
+    date_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status','setup_time']
     df1 = pd.DataFrame(mch1, columns=date_columns)
     df2 = pd.DataFrame(mch2, columns=date_columns)
 
-    # date_columns = ["Start", "Finish"]
 
-    # for col in date_columns:
-    #     df1[col] = pd.to_datetime(df1[col], dayfirst=True)
+
     df1["Diff"] = df1.end_time - df1.start_time
     df2["Diff"] = df2.end_time - df2.start_time
-
-    # print(df1)
-    # print(df2)
-
+    print(df1)
+    print(df2)
+    #
     fig, ax = plt.subplots(figsize=(10, 1))
     plt.barh(y=df1['machine_ID'], width=df1['Diff'], left=df1['start_time'])
+    plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'])
     plt.barh(y=df2['machine_ID'], width=df2['Diff'], left=df2['start_time'])
+    plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'])
+
     plt.show()
-    fig.savefig('gannt-chart.png', facecolor='white', transparent=False, dpi=600)
 
     solution['Objective'] = []
     solution['Objective'].append(total_CompletionTime)
     #solution['Objective'].append(mach.measures['makespan'])
 
     return solution
+
