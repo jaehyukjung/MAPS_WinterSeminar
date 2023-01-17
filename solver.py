@@ -24,7 +24,6 @@ def rule_solver(instance: Prob_Instance):
         mach.initialize()
         mach.settingTimeMatrix = setup_matrix
 
-
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
         is_possble_job = list(filter(lambda x:len(x.pre_list) == 0, not_completed_jobs))
@@ -47,22 +46,44 @@ def rule_solver(instance: Prob_Instance):
     mch1 = list(filter(lambda x: x[2]==1, sch_list))
     mch2 = list(filter(lambda x: x[2]==2, sch_list))
 
-    date_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status','setup_time']
-    df1 = pd.DataFrame(mch1, columns=date_columns)
-    df2 = pd.DataFrame(mch2, columns=date_columns)
+    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status','setup_time']
+    df1 = pd.DataFrame(mch1, columns=sch_columns)
+    df2 = pd.DataFrame(mch2, columns=sch_columns)
 
-
-
-    df1["Diff"] = df1.end_time - df1.start_time
-    df2["Diff"] = df2.end_time - df2.start_time
+    df1["work_time"] = df1.end_time - df1.start_time
+    df2["work_time"] = df2.end_time - df2.start_time
     print(df1)
     print(df2)
-    #
-    fig, ax = plt.subplots(figsize=(10, 1))
-    plt.barh(y=df1['machine_ID'], width=df1['Diff'], left=df1['start_time'])
-    plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'])
-    plt.barh(y=df2['machine_ID'], width=df2['Diff'], left=df2['start_time'])
-    plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'])
+
+    fig, ax = plt.subplots(figsize=(11, 2))
+    ax.set_yticks([1,2])
+    ax.set_yticklabels(['Machine1', 'Machine2'])
+
+    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'])
+    pl2 = plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'])
+    pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'])
+    pl4 = plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'])
+
+    job_name1 = df1['job_ID'].to_list()
+    job_name2 = df2['job_ID'].to_list()
+
+    setup1 = []
+    setup2 = []
+
+    for i in range(len(df1)):
+        setup1.append("setup")
+        job_name1[i] = ('Job'+str(job_name1[i]))
+
+    for i in range(len(df2)):
+        setup2.append("setup")
+        job_name2[i] = ('Job' + str(job_name2[i]))
+
+    ax.bar_label(pl1, job_name1, label_type='center')
+    ax.bar_label(pl2, setup1, label_type='center')
+    ax.bar_label(pl3, job_name2, label_type='center')
+    ax.bar_label(pl4,setup2, label_type='center')
+
+    plt.title('Sum of Completion Time: ' + str(total_CompletionTime))
 
     plt.show()
 
