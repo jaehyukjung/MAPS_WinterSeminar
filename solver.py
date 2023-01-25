@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from module import *
 import numpy as np
+from tkinter_colormap import *
 
 def rule_solver(instance: Prob_Instance):
     print('Solver Start')
@@ -15,6 +16,8 @@ def rule_solver(instance: Prob_Instance):
     job: Job
     for job in job_list:
         job.initialize()
+
+    color_list = random.sample(plt.colormaps(), len(job_list))
 
     setup_matrix = settingMatrtix()
     mach_list = instance.machine_list
@@ -79,9 +82,9 @@ def rule_solver(instance: Prob_Instance):
     ax.set_yticks([1,2])
     ax.set_yticklabels(['Machine1', 'Machine2'])
 
-    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'], color = 'red')
+    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'], color = random.choice(['r','g','b']))
     pl2 = plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'], color = 'yellow')
-    pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'])
+    pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'], color = random.choice(['r','g','b']))
     pl4 = plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'], color = 'yellow')
 
     job_name1 = df1['job_ID'].to_list()
