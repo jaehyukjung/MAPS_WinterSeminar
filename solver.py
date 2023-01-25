@@ -1,8 +1,8 @@
 import random
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from module import *
-from matplotlib import colors as mcolors
 import numpy as np
 
 def rule_solver(instance: Prob_Instance):
@@ -17,15 +17,24 @@ def rule_solver(instance: Prob_Instance):
     for job in job_list:
         job.initialize()
 
-    setup_matrix = settingMatrtix()
+    setup_matrix = set_setup_matrtix()
     mach_list = instance.machine_list
     mach: Machine
     mach_set = []
     for mach in mach_list:
         mach.initialize()
+
+    avail_check_list = np.array([[1 if mach.availabityMatrix[i] == True else 0 for i in range(statusNum)] for mach in mach_list])
+    avail_check_list2 = avail_check_list.sum(axis=0)
+    for i in range(len(avail_check_list2)):
+        if avail_check_list2[i] == 0:
+            mach = random.choice(mach_list)
+            mach.availabityMatrix[i] = True
+    for mach in mach_list:
         mach.settingTimeMatrix = setup_matrix
         mach_set.append(mach.setupstatus)
 
+    work_speed = set_work_speed_matrix(job_list, mach_list)
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
         is_possble_job = list(filter(lambda x:len(x.pre_list) == 0, not_completed_jobs))
@@ -34,8 +43,9 @@ def rule_solver(instance: Prob_Instance):
             mach = random.choice(mach_list)
             cur = job
             setup_time = mach.GETSETTime(previousJob=mach.setupstatus, currentJob=cur)
-            mach.work(job)
-            sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setupstatus, setup_time]) # 스케줄 리스트
+            if mach.workSpeedList[job.id -1] != 0:
+                mach.work(job)
+                sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setupstatus, setup_time]) # 스케줄 리스트
 
         for job in not_completed_jobs:
             for completed_job in is_possble_job:

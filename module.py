@@ -45,6 +45,7 @@ class Machine: # 작업 기계
         self.id = ID
         self.setupstatus = setUpStatus
         self.avail_time = 0 # 시작 가능 시간
+        self.work_speed = 0
 
     def initialize(self):
         self.measures = {}
@@ -53,12 +54,12 @@ class Machine: # 작업 기계
         self.measures['makespan'] = 0
         self.measures['total_tardiness'] = 0
         self.setAvialabilityMatrix()
-        self.setWorkSpeedList()
-        self.work_speed = self.workSpeedList[0]
+        # self.setWorkSpeedList()
+        # self.work_speed = self.workSpeedList[0]
 
     def work(self, target: Job):
         target.done = True
-        self.work_speed = self.workSpeedList[target.setup]
+        self.work_speed = self.workSpeedList[target.id-1]
         self.work_time = target.process_time / self.work_speed  # 작업시간
 
         if self.setupstatus != target.setup: # 기계의 setup과 Job의 setup 차이 계산
@@ -75,10 +76,12 @@ class Machine: # 작업 기계
 
     def setAvialabilityMatrix(self): # Job에 대한 기계의 작업 가능 여부(Mj)
         self.availabityMatrix = [random.choice([True, False]) for i in range(statusNum)]
+        if True not in self.availabityMatrix:
+            self.availabityMatrix[random.randint(0,2)] = True
 
-    def setWorkSpeedList(self): # 각 기계의 Job에 대한 작업 속도
-        workSpeedList = [np.random.randint(1,4) for i in range(statusNum)]
-        self.workSpeedList = workSpeedList
+    # def setWorkSpeedList(self): # 각 기계의 Job에 대한 작업 속도
+    #     workSpeedList = [np.random.randint(1,4) for i in range(statusNum)]
+    #     self.workSpeedList = workSpeedList
 
     def GETSETTime(self, previousJob, currentJob: Job): # 기계가 작업할때 setupTime 계산
         return self.settingTimeMatrix[previousJob][currentJob.setup]
@@ -92,7 +95,7 @@ class Machine: # 작업 기계
     def __repr__(self):
         return str('Machine # ' + str(self.id))
 
-def settingMatrtix(): # 각 작업별 setupTimeMatrix
+def set_setup_matrtix(): # 각 작업별 setupTimeMatrix
     setup_matrix = np.random.randint(1, 4, size=(statusNum, statusNum))
     setup_matrix = np.triu(setup_matrix)
     setup_matrix += setup_matrix.T - np.diag(setup_matrix.diagonal())
@@ -100,4 +103,10 @@ def settingMatrtix(): # 각 작업별 setupTimeMatrix
                     range(statusNum)]
     return setup_matrix
 
+def set_work_speed_matrix(job_list, mach_list):
+    work_speed_list = [[np.random.randint(1,4) if mach_list[j].availabityMatrix[job_list[i].setup] == True else 0 for i in range(len(job_list))] for j in range(len(mach_list))]
+    for i in range(len(mach_list)):
+        mach_list[i].workSpeedList = work_speed_list[i]
+
+    return work_speed_list
 
