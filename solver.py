@@ -6,7 +6,6 @@ import numpy as np
 
 def rule_solver(instance: Prob_Instance):
     print('Solver Start')
-    print('[start time, end time, machine ID, job ID, setup status]')
     solution = {}
     solution["Problem"] = instance.deepcopy()
     sch_list = []
@@ -20,9 +19,11 @@ def rule_solver(instance: Prob_Instance):
     setup_matrix = settingMatrtix()
     mach_list = instance.machine_list
     mach: Machine
+    mach_set = []
     for mach in mach_list:
         mach.initialize()
         mach.settingTimeMatrix = setup_matrix
+        mach_set.append(mach.setupstatus)
 
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
@@ -46,6 +47,25 @@ def rule_solver(instance: Prob_Instance):
     mch1 = list(filter(lambda x: x[2]==1, sch_list))
     mch2 = list(filter(lambda x: x[2]==2, sch_list))
 
+    set_lst1 = [mach_set[0]]
+    set_lst2 = [mach_set[1]]
+
+    for i in range(len(mch1)):
+        set_lst1.append(mch1[i][4])
+
+    for i in range(len(mch2)):
+        set_lst2.append(mch2[i][4])
+
+    word1 = []
+    word2 = []
+
+    for i in range(len(set_lst1)-1):
+        word1.append("(" + str(set_lst1[i]) + "->" + str(set_lst1[i+1]) + ")")
+
+    for i in range(len(set_lst2)-1):
+        word2.append("(" + str(set_lst1[i]) + "->" + str(set_lst1[i + 1]) + ")")
+
+
     sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status','setup_time']
     df1 = pd.DataFrame(mch1, columns=sch_columns)
     df2 = pd.DataFrame(mch2, columns=sch_columns)
@@ -59,10 +79,10 @@ def rule_solver(instance: Prob_Instance):
     ax.set_yticks([1,2])
     ax.set_yticklabels(['Machine1', 'Machine2'])
 
-    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'])
-    pl2 = plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'])
+    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'], color = 'red')
+    pl2 = plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'], color = 'yellow')
     pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'])
-    pl4 = plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'])
+    pl4 = plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'], color = 'yellow')
 
     job_name1 = df1['job_ID'].to_list()
     job_name2 = df2['job_ID'].to_list()
@@ -71,11 +91,11 @@ def rule_solver(instance: Prob_Instance):
     setup2 = []
 
     for i in range(len(df1)):
-        setup1.append("setup")
+        setup1.append("setup\n" + word1[i])
         job_name1[i] = ('Job'+str(job_name1[i]))
 
     for i in range(len(df2)):
-        setup2.append("setup")
+        setup2.append("setup\n" + word2[i])
         job_name2[i] = ('Job' + str(job_name2[i]))
 
     ax.bar_label(pl1, job_name1, label_type='center')
