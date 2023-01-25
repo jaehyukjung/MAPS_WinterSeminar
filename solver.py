@@ -2,8 +2,8 @@ import random
 import pandas as pd
 import matplotlib.pyplot as plt
 from module import *
+from matplotlib import colors as mcolors
 import numpy as np
-from tkinter_colormap import *
 
 def rule_solver(instance: Prob_Instance):
     print('Solver Start')
@@ -16,8 +16,6 @@ def rule_solver(instance: Prob_Instance):
     job: Job
     for job in job_list:
         job.initialize()
-
-    color_list = random.sample(plt.colormaps(), len(job_list))
 
     setup_matrix = settingMatrtix()
     mach_list = instance.machine_list
@@ -73,6 +71,8 @@ def rule_solver(instance: Prob_Instance):
     df1 = pd.DataFrame(mch1, columns=sch_columns)
     df2 = pd.DataFrame(mch2, columns=sch_columns)
 
+    mcolors.CSS4_COLORS = list(mcolors.CSS4_COLORS.values())
+
     df1["work_time"] = df1.end_time - df1.start_time
     df2["work_time"] = df2.end_time - df2.start_time
     print(df1)
@@ -82,9 +82,12 @@ def rule_solver(instance: Prob_Instance):
     ax.set_yticks([1,2])
     ax.set_yticklabels(['Machine1', 'Machine2'])
 
-    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'], color = random.choice(['r','g','b']))
+    pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'], color=mcolors.CSS4_COLORS)
+    mcolors.CSS4_COLORS.pop(7)
+    for i in range(len(df1)):
+        mcolors.CSS4_COLORS.pop(0)
     pl2 = plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'], color = 'yellow')
-    pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'], color = random.choice(['r','g','b']))
+    pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'], color = mcolors.CSS4_COLORS)
     pl4 = plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'], color = 'yellow')
 
     job_name1 = df1['job_ID'].to_list()
