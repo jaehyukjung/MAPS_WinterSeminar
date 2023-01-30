@@ -3,13 +3,13 @@ import module
 import solver
 import numpy as np
 
-def random_LoadProb():
-
+def random_LoadProb(id):
+    random.seed(100)
     random_job = random.randint(6,8)
     random_machine = random.randint(2,3)
 
     ThisProb = module.Prob_Instance()
-
+    ThisProb.chromo = module.Chromosome(id)
     for i in range(random_job):
         pre_list = []
         if i >= 2:
@@ -24,7 +24,11 @@ def random_LoadProb():
 
 if __name__ == "__main__":
     random.seed(666)
+    population =[]
+    for i in range(1,101):
+        Sample = random_LoadProb(i)
+        Solution, chromo = solver.rule_solver(Sample,i)
+        population.append(chromo)
+        print('Sum of Comepletion Time is ' + str(Solution['Objective']))
 
-    Sample = random_LoadProb()
-    Solution = solver.rule_solver(Sample)
-    print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+    print(1)
