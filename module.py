@@ -11,6 +11,7 @@ class Prob_Instance:
         self.objective = 'Makespan'
         self.job_list = [] # 작업 list
         self.machine_list = [] # 기계 list
+        self.chromo: Chromosome
 
     def __repr__(self):
         return str(
@@ -19,6 +20,7 @@ class Prob_Instance:
 
     def deepcopy(self):
         return copy.deepcopy(self)
+
 
 class Job: # 입력 데이터: job (요청)
     def __init__(self, ID: int, Process_time, Due_date, Weight, Release_time,Setup_Status:int, Pre_list:list):
@@ -110,3 +112,21 @@ def set_work_speed_matrix(job_list, mach_list):
 
     return work_speed_list
 
+class Gene:
+    def __init__(self,job, mach):
+        self.job = job
+        self.mach = mach
+
+    def getGene(self):
+        return [self.job, self.mach]
+
+class Chromosome:
+    def __init__(self, id):
+        self.id = id
+        self.chromo = []
+
+    def setChromo(self, gene):
+        self.chromo.append(gene)
+
+    def getChromo(self):
+        return self.chromo
