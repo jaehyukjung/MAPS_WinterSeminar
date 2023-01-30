@@ -23,7 +23,7 @@ def random_LoadProb():
     return ThisProb
 
 if __name__ == "__main__":
-    random.seed(42)
+    random.seed(666)
 
     Sample = random_LoadProb()
     Solution = solver.rule_solver(Sample)
