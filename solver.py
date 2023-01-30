@@ -1,6 +1,4 @@
-import random
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 from module import *
@@ -58,9 +56,11 @@ def rule_solver(instance: Prob_Instance):
 
     mch1 = list(filter(lambda x: x[2]==1, sch_list))
     mch2 = list(filter(lambda x: x[2]==2, sch_list))
+    mch3 = list(filter(lambda x: x[2]==3, sch_list))
 
     set_lst1 = [mach_set[0]]
     set_lst2 = [mach_set[1]]
+    set_lst3 = [mach_set[2]]
 
     for i in range(len(mch1)):
         set_lst1.append(mch1[i][4])
@@ -68,30 +68,41 @@ def rule_solver(instance: Prob_Instance):
     for i in range(len(mch2)):
         set_lst2.append(mch2[i][4])
 
+    for i in range(len(mch3)):
+        set_lst3.append(mch3[i][4])
+
     word1 = []
     word2 = []
+    word3 = []
 
     for i in range(len(set_lst1)-1):
         word1.append("(" + str(set_lst1[i]) + "->" + str(set_lst1[i+1]) + ")")
 
     for i in range(len(set_lst2)-1):
-        word2.append("(" + str(set_lst1[i]) + "->" + str(set_lst1[i + 1]) + ")")
+        word2.append("(" + str(set_lst2[i]) + "->" + str(set_lst2[i + 1]) + ")")
 
+    for i in range(len(set_lst3)-1):
+        word3.append("(" + str(set_lst3[i]) + "->" + str(set_lst3[i + 1]) + ")")
 
     sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status','setup_time']
     df1 = pd.DataFrame(mch1, columns=sch_columns)
     df2 = pd.DataFrame(mch2, columns=sch_columns)
+    df3 = pd.DataFrame(mch3, columns=sch_columns)
 
     mcolors.CSS4_COLORS = list(mcolors.CSS4_COLORS.values())
 
     df1["work_time"] = df1.end_time - df1.start_time
     df2["work_time"] = df2.end_time - df2.start_time
+    df3["work_time"] = df3.end_time - df3.start_time
+
     print(df1)
     print(df2)
+    print(df3)
 
+    # 간트차트 생성
     fig, ax = plt.subplots(figsize=(11, 2))
-    ax.set_yticks([1,2])
-    ax.set_yticklabels(['Machine1', 'Machine2'])
+    ax.set_yticks([1,2,3])
+    ax.set_yticklabels(['Machine1', 'Machine2','Machine3'])
 
     pl1 = plt.barh(y=df1['machine_ID'], width=df1['work_time'], left=df1['start_time'], color=mcolors.CSS4_COLORS)
     mcolors.CSS4_COLORS.pop(7)
@@ -100,12 +111,18 @@ def rule_solver(instance: Prob_Instance):
     pl2 = plt.barh(y=df1['machine_ID'], width=df1['setup_time'], left=df1['start_time'] - df1['setup_time'], color = 'yellow')
     pl3 = plt.barh(y=df2['machine_ID'], width=df2['work_time'], left=df2['start_time'], color = mcolors.CSS4_COLORS)
     pl4 = plt.barh(y=df2['machine_ID'], width=df2['setup_time'], left=df2['start_time'] - df2['setup_time'], color = 'yellow')
+    pl5 = plt.barh(y=df3['machine_ID'], width=df3['work_time'], left=df3['start_time'], color = mcolors.CSS4_COLORS)
+    pl6 = plt.barh(y=df3['machine_ID'], width=df3['setup_time'], left=df3['start_time'] - df3['setup_time'], color = 'yellow')
 
     job_name1 = df1['job_ID'].to_list()
     job_name2 = df2['job_ID'].to_list()
+    job_name3 = df3['job_ID'].to_list()
+
 
     setup1 = []
     setup2 = []
+    setup3 = []
+
 
     for i in range(len(df1)):
         setup1.append("setup\n" + word1[i])
@@ -115,10 +132,16 @@ def rule_solver(instance: Prob_Instance):
         setup2.append("setup\n" + word2[i])
         job_name2[i] = ('Job' + str(job_name2[i]))
 
+    for i in range(len(df3)):
+        setup3.append("setup\n" + word3[i])
+        job_name3[i] = ('Job' + str(job_name3[i]))
+
     ax.bar_label(pl1, job_name1, label_type='center')
     ax.bar_label(pl2, setup1, label_type='center')
     ax.bar_label(pl3, job_name2, label_type='center')
     ax.bar_label(pl4,setup2, label_type='center')
+    ax.bar_label(pl5, job_name3, label_type='center')
+    ax.bar_label(pl6,setup3, label_type='center')
 
     plt.title('Sum of Completion Time: ' + str(total_CompletionTime))
 
@@ -129,4 +152,3 @@ def rule_solver(instance: Prob_Instance):
     #solution['Objective'].append(mach.measures['makespan'])
 
     return solution
-
