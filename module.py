@@ -38,6 +38,9 @@ class Job: # 입력 데이터: job (요청)
         self.start_time = -1 # 시작 시간
         self.tardiness = -1
 
+    def __repr__(self):
+        return str('Job # ' + str(self.id))
+
 class Machine: # 작업 기계
     def __init__(self, ID: int, setUpStatus: int):
         self.start_time = None
@@ -124,9 +127,13 @@ class Chromosome:
     def __init__(self, id):
         self.id = id
         self.chromo = []
+        self.objective = 0
 
     def setChromo(self, gene):
         self.chromo.append(gene)
 
     def getChromo(self):
         return self.chromo
+
+    def __repr__(self):
+        return str('chromo' + str(self.id))

@@ -5,7 +5,7 @@ import numpy as np
 
 def random_LoadProb(id):
     random.seed(100)
-    random_job = random.randint(6,8)
+    random_job = random.randint(7,9)
     random_machine = random.randint(2,3)
 
     ThisProb = module.Prob_Instance()
@@ -25,10 +25,11 @@ def random_LoadProb(id):
 if __name__ == "__main__":
     random.seed(666)
     population =[]
-    for i in range(1,101):
+    for i in range(1,501):
         Sample = random_LoadProb(i)
         Solution, chromo = solver.rule_solver(Sample,i)
         population.append(chromo)
         print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+        population = sorted(population, key=lambda x: x.objective)[:100]
 
     print(1)
