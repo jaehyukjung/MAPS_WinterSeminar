@@ -80,6 +80,7 @@ class Machine: # 작업 기계
         self.served_job.append(target.id)
 
     def setAvialabilityMatrix(self): # Job에 대한 기계의 작업 가능 여부(Mj)
+        random.seed(42)
         self.availabityMatrix = [random.choice([True, False]) for i in range(statusNum)]
         if True not in self.availabityMatrix:
             self.availabityMatrix[random.randint(0,2)] = True
@@ -100,7 +101,8 @@ class Machine: # 작업 기계
     def __repr__(self):
         return str('Machine # ' + str(self.id))
 
-def set_setup_matrtix(): # 각 작업별 setupTimeMatrix
+def set_setup_matrtix(seed): # 각 작업별 setupTimeMatrix
+    np.random.seed(seed)
     setup_matrix = np.random.randint(1, 4, size=(statusNum, statusNum))
     setup_matrix = np.triu(setup_matrix)
     setup_matrix += setup_matrix.T - np.diag(setup_matrix.diagonal())
