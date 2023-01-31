@@ -59,6 +59,8 @@ def rule_solver(instance: Prob_Instance, seed):
     for mach in mach_list:
         total_CompletionTime += mach.avail_time
 
+    instance.chromo.objective = total_CompletionTime
+
     # mch1 = list(filter(lambda x: x[2]==1, sch_list))
     # mch2 = list(filter(lambda x: x[2]==2, sch_list))
     # mch3 = list(filter(lambda x: x[2]==3, sch_list))
