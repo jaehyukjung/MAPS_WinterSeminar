@@ -144,9 +144,6 @@ def rule_solver(instance: Prob_Instance, seed):
     solution['Objective'].append(total_CompletionTime)
     #solution['Objective'].append(mach.measures['makespan'])
 
-<<<<<<< HEAD
-    return solution, instance.chromo
-=======
     return solution, instance.chromo
 
 def mach_choice(mach_list):
@@ -175,4 +172,3 @@ def match(instance, job_list, mach_list, seed):
                     job.pre_list.remove(completed_job.id)
 
     return instance, mach_list, job_list
->>>>>>> 2c867dde564c559a3c2d15506b57f4f0b696cc66
