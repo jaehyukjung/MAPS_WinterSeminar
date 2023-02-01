@@ -1,6 +1,7 @@
 import random
 import module
 import solver
+import mutation_solver
 import numpy as np
 
 def random_LoadProb(id):
@@ -27,6 +28,15 @@ if __name__ == "__main__":
     for i in range(1,501):
         Sample = random_LoadProb(i)
         Solution, chromo = solver.rule_solver(Sample,i)
-        population.append(chromo)
+        population.append((chromo,Solution))
         print('Sum of Comepletion Time is ' + str(Solution['Objective']))
-    population = sorted(population, key=lambda x: x.objective)[:100]
+    population = sorted(population, key=lambda x: x[0].objective)[:100]
+    population2=[]
+    for i in range(501,601):
+        Sample = random_LoadProb(i)
+        Solution, chromo = mutation_solver.mut_solver(Sample,i,population[i-501][0])
+        population2.append((chromo,Solution))
+        print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+
+
+

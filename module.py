@@ -137,5 +137,9 @@ class Chromosome:
     def getChromo(self):
         return self.chromo
 
+    def getId_list(self):
+        self.id_list = [[gene[0].id, gene[1].id] for gene in self.chromo]
+        return self.id_list
+
     def __repr__(self):
         return str('chromo' + str(self.id))

@@ -1,13 +1,8 @@
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# from matplotlib import colors as mcolors
 from module import *
 import numpy as np
 import random
 
-def rule_solver(instance: Prob_Instance, seed):
-    # random.seed(seed)
-    # np.random.seed(seed)
+def mut_solver(instance: Prob_Instance, seed, chromo:Chromosome):
     print('Solver Start')
     solution = {}
     solution["Problem"] = instance.deepcopy()
@@ -39,13 +34,40 @@ def rule_solver(instance: Prob_Instance, seed):
         mach.settingTimeMatrix = setup_matrix
         mach_set.append(mach.setupstatus)
 
+    chromo_id_list = chromo.getId_list()
+    chromo_id_list, n = change_chromo(chromo_id_list, job_list, mach_list, seed)
+    ch_id = chromo_id_list[n][0]
     work_speed = set_work_speed_matrix(job_list, mach_list)
-    instance, mach_list, job_list= match(instance, job_list,mach_list, seed)
+
+    while any(job.done is False for job in job_list):
+        not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
+        is_possble_job = list(filter(lambda x:len(x.pre_list) == 0, not_completed_jobs))
+
+        for job in is_possble_job:
+            mach = match(job, mach_list,chromo_id_list)
+            cur = job
+            setup_time = mach.GETSETTime(previousJob=mach.setupstatus, currentJob=cur)
+            if mach.workSpeedList[job.id -1] != 0:
+                mach.work(job)
+                gene = Gene(job,mach)
+                instance.chromo.setChromo(gene.getGene())
+                sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setupstatus, setup_time]) # 스케줄 리스트
+            else:
+                if job.id == ch_id:
+                    chromo_id_list[n][1] = random.randint(1,len(mach_list))
+
+
+        for job in not_completed_jobs:
+            for completed_job in is_possble_job:
+                if completed_job.id in job.pre_list:
+                    job.pre_list.remove(completed_job.id)
 
     for mach in mach_list:
         total_CompletionTime += mach.avail_time
 
     instance.chromo.objective = total_CompletionTime
+
+
 
     solution['Objective'] = []
     solution['Objective'].append(total_CompletionTime)
@@ -53,26 +75,14 @@ def rule_solver(instance: Prob_Instance, seed):
 
     return solution, instance.chromo
 
+def match(job, mach_list,chromo_id_list):
+    mach_id = list(filter(lambda x:x[0]== job.id, chromo_id_list))
+    mach_id = mach_id[0][1]
+    mach = list(filter(lambda x:x.id== mach_id, mach_list))
+    return mach[0]
 
-def match(instance, job_list, mach_list, seed):
+def change_chromo(chromo_id_list, job_list, mach_list, seed):
     random.seed(seed)
-    while any(job.done is False for job in job_list):
-        not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
-        is_possble_job = list(filter(lambda x:len(x.pre_list) == 0, not_completed_jobs))
-
-        for job in is_possble_job:
-            mach = random.choice(mach_list)
-            cur = job
-            setup_time = mach.GETSETTime(previousJob=mach.setupstatus, currentJob=cur)
-            if mach.workSpeedList[job.id -1] != 0:
-                mach.work(job)
-                gene = Gene(job,mach)
-                instance.chromo.setChromo(gene.getGene())
-                # sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setupstatus, setup_time]) # 스케줄 리스트
-
-        for job in not_completed_jobs:
-            for completed_job in is_possble_job:
-                if completed_job.id in job.pre_list:
-                    job.pre_list.remove(completed_job.id)
-
-    return instance, mach_list, job_list
+    n, m = random.randrange(0, len(job_list)), random.randint(1, len(mach_list))
+    chromo_id_list[n][1] = m
+    return chromo_id_list, n
