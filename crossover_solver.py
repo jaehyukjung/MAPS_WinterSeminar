@@ -82,8 +82,9 @@ def match(job, mach_list,chromo_id_list):
     return mach[0]
 
 def cross_chromo(chromo1, chromo2):
-    chromo = chromo1[:len(chromo1)//2]
+    point = random.randint(1,len(chromo1)-1) # point 지정
+    chromo = chromo1[:point]
     job_id = list(zip(*chromo))[0]
-    temp = list(filter(lambda x:x[0] not in job_id,chromo2))
+    temp = list(filter(lambda x:x[0] not in job_id,chromo2)) # chromo에 있는 job id 중 없는 것 추가
     chromo.extend(temp)
     return chromo
