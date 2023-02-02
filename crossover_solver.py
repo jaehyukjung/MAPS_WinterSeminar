@@ -81,12 +81,6 @@ def match(job, mach_list,chromo_id_list):
     mach = list(filter(lambda x:x.id== mach_id, mach_list))
     return mach[0]
 
-def change_chromo(chromo_id_list, job_list, mach_list, seed):
-    random.seed(seed)
-    n, m = random.randrange(0, len(job_list)), random.randint(1, len(mach_list))
-    chromo_id_list[n][1] = m
-    return chromo_id_list, n
-
 def cross_chromo(chromo1, chromo2):
     chromo = chromo1[:len(chromo1)//2]
     job_id = list(zip(*chromo))[0]
