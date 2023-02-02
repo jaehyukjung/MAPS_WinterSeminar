@@ -2,12 +2,12 @@ import random
 import module
 import solver
 import mutation_solver
-import numpy as np
+import crossover_solver
 
 def random_LoadProb(id):
     random.seed(100)
-    random_job = random.randint(7,9)
-    random_machine = random.randint(2,3)
+    random_job = 15
+    random_machine = 5
 
     ThisProb = module.Prob_Instance()
     ThisProb.chromo = module.Chromosome(id)
@@ -36,6 +36,12 @@ if __name__ == "__main__":
         Sample = random_LoadProb(i)
         Solution, chromo = mutation_solver.mut_solver(Sample,i,population[i-501][0])
         population2.append((chromo,Solution))
+        print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+    population3=[]
+    for i in range(601,700):
+        Sample = random_LoadProb(i)
+        Solution, chromo = crossover_solver.cross_solver(Sample,i,population[i-601][0],population[i-600][0])
+        population3.append((chromo,Solution))
         print('Sum of Comepletion Time is ' + str(Solution['Objective']))
 
 
