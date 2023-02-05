@@ -2,7 +2,8 @@ from module import *
 import numpy as np
 import random
 
-def mut_solver(instance: Prob_Instance, seed, chromo:Chromosome):
+
+def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
     print('Solver Start')
     solution = {}
     solution["Problem"] = instance.deepcopy()
@@ -20,22 +21,18 @@ def mut_solver(instance: Prob_Instance, seed, chromo:Chromosome):
     for mach in mach_list:
         mach.initialize()
 
-
-    # mach_list = check_avail(mach_list) 이전에 있던거 쓰니거니까 무조건 가능함.
     setup_matrix = instance.setup_metrix
 
     for mach in mach_list:
         mach.set_time_matrix = setup_matrix
         mach_set.append(mach.setup_status)
 
-
     chromo_id_list = chromo.getId_list()
     chromo_id_list, n = change_chromo(chromo_id_list, job_list, mach_list, seed)
     ch_id = chromo_id_list[n][0]
 
-
     # solver
-    instance, mach_list, job_list = match(instance, job_list,mach_list, chromo_id_list, n, ch_id)
+    instance, mach_list, job_list = match(instance, job_list, mach_list, chromo_id_list, n, ch_id)
 
     for mach in mach_list:
         total_CompletionTime += mach.avail_time
@@ -46,6 +43,7 @@ def mut_solver(instance: Prob_Instance, seed, chromo:Chromosome):
 
     return solution, instance.chromo
 
+
 def match(instance, job_list, mach_list, chromo_id_list, n, ch_id):
     gene_id = 1
 
@@ -53,24 +51,25 @@ def match(instance, job_list, mach_list, chromo_id_list, n, ch_id):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
 
         for job in not_completed_jobs:
-            mach = mach_match(job, mach_list,chromo_id_list)
+            mach = mach_match(job, mach_list, chromo_id_list)
             cur = job
             setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=cur)
-            if mach.work_speed_list[job.id -1] != 0:
+            if mach.work_speed_list[job.id - 1] != 0:
                 mach.work(job)
-                gene = Gene(gene_id,job,mach)
+                gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
             else:
                 if job.id == ch_id:
-                    chromo_id_list[n][1] = random.randint(1,len(mach_list))
+                    chromo_id_list[n][1] = random.randint(1, len(mach_list))
 
     return instance, mach_list, job_list
 
-def mach_match(job, mach_list,chromo_id_list):
-    mach_id = list(filter(lambda x:x[0]== job.id, chromo_id_list))
+
+def mach_match(job, mach_list, chromo_id_list):
+    mach_id = list(filter(lambda x: x[0] == job.id, chromo_id_list))
     mach_id = mach_id[0][1]
-    mach = list(filter(lambda x:x.id== mach_id, mach_list))
+    mach = list(filter(lambda x: x.id == mach_id, mach_list))
     return mach[0]
 
 

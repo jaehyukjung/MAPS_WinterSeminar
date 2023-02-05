@@ -2,6 +2,7 @@ from module import *
 import numpy as np
 import random
 
+
 def rule_solver(instance: Prob_Instance, seed):
     print('Solver Start')
     solution = {}
@@ -26,10 +27,8 @@ def rule_solver(instance: Prob_Instance, seed):
         mach.set_time_matrix = setup_matrix
         mach_set.append(mach.setup_status)
 
-
-
     # solver
-    instance, mach_list, job_list = match(instance, job_list,mach_list, seed)
+    instance, mach_list, job_list = match(instance, job_list, mach_list, seed)
 
     for mach in mach_list:
         total_CompletionTime += mach.avail_time
@@ -52,16 +51,17 @@ def match(instance, job_list, mach_list, seed):
             mach = random.choice(mach_list)
             cur = job
             setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=cur)
-            if mach.work_speed_list[job.id -1] != 0:
+            if mach.work_speed_list[job.id - 1] != 0:
                 mach.work(job)
-                gene = Gene(gene_id,job,mach)
+                gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
                 # sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
 
     return instance, mach_list, job_list
 
-def check_avail(mach_list:list): # 사용 가능한 머신 리스트인지 판단 -> 모든 셋업에 True가 포함 돼 있는지 확인 없다면 변경
+
+def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판단 -> 모든 셋업에 True가 포함 돼 있는지 확인 없다면 변경
     avail_check_list = np.array(
         [[1 if mach.avail_matrix[i] else 0 for i in range(STATUSNUM)] for mach in mach_list])
     avail_check_list2 = avail_check_list.sum(axis=0)
