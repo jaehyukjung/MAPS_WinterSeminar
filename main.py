@@ -55,7 +55,7 @@ if __name__ == "__main__":
         for i in range(100):  # random population 생성
             Sample = random_LoadProb(i)
             mach_setup = [[i.setup_status] for i in Sample.machine_list]
-            Solution, chromo, mach_list, sch_list = rule_solver(Sample, j * 100 + i)
+            Solution, chromo, mach_list, sch_list = rule_solver(Sample, 500 + j * 100 + i)
             population.append((chromo, Solution, sch_list))
             print('Sum of Comepletion Time is ' + str(Solution['Objective']))
 
