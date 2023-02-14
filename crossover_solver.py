@@ -33,7 +33,7 @@ def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
     chromo_id_list = cross_chromo(chromo_id_list1, chromo_id_list2)
 
     # solver
-    instance, mach_list, job_list = match(instance, job_list, mach_list, chromo_id_list)
+    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, chromo_id_list, sch_list)
 
     for mach in mach_list:
         total_CompletionTime += mach.avail_time
@@ -44,10 +44,10 @@ def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
     solution['Objective'].append(total_CompletionTime)
     # solution['Objective'].append(mach.measures['makespan'])
 
-    return solution, instance.chromo
+    return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, chromo_id_list):
+def match(instance, job_list, mach_list, chromo_id_list, sch_list):
     gene_id = 1
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
@@ -61,9 +61,9 @@ def match(instance, job_list, mach_list, chromo_id_list):
                 gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
-                # sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
+                sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
 
-    return instance, mach_list, job_list
+    return instance, mach_list, job_list, sch_list
 
 
 def mach_match(job, mach_list, chromo_id_list):
