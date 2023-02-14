@@ -2,7 +2,6 @@ from module import *
 import numpy as np
 import random
 
-
 def rule_solver(instance: Prob_Instance, seed):
     print('Solver Start')
     solution = {}
@@ -28,7 +27,7 @@ def rule_solver(instance: Prob_Instance, seed):
         mach_set.append(mach.setup_status)
 
     # solver
-    instance, mach_list, job_list = match(instance, job_list, mach_list, seed)
+    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, seed, sch_list)
 
     for mach in mach_list:
         total_CompletionTime += mach.avail_time
@@ -37,16 +36,15 @@ def rule_solver(instance: Prob_Instance, seed):
     solution['Objective'] = []
     solution['Objective'].append(total_CompletionTime)
 
-    return solution, instance.chromo
+    return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, seed):
+def match(instance, job_list, mach_list, seed, sch_list):
     random.seed(seed)
 
     gene_id = 1
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
-
         for job in not_completed_jobs:
             mach = random.choice(mach_list)
             cur = job
@@ -56,9 +54,9 @@ def match(instance, job_list, mach_list, seed):
                 gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
-                # sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
+                sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
 
-    return instance, mach_list, job_list
+    return instance, mach_list, job_list, sch_list
 
 
 def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판단 -> 모든 셋업에 True가 포함 돼 있는지 확인 없다면 변경
@@ -75,3 +73,5 @@ def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판
                 mach[0].avail_matrix[i] = True
 
     return mach_list
+
+
