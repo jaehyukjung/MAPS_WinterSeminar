@@ -2,6 +2,7 @@ from module import *
 import numpy as np
 import random
 
+
 def rule_solver(instance: Prob_Instance, seed):
     print('Solver Start')
     solution = {}
@@ -54,7 +55,8 @@ def match(instance, job_list, mach_list, seed, sch_list):
                 gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
-                sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
+                sch_list.append(
+                    [mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time])  # 스케줄 리스트
 
     return instance, mach_list, job_list, sch_list
 
@@ -73,5 +75,3 @@ def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판
                 mach[0].avail_matrix[i] = True
 
     return mach_list
-
-

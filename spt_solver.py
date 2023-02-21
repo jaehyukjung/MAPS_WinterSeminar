@@ -2,6 +2,7 @@ from module import *
 import numpy as np
 import random
 
+
 def spt_solver(instance: Prob_Instance, seed):
     print('Solver Start')
     solution = {}
@@ -44,8 +45,10 @@ def match(instance, job_list, mach_list, seed, sch_list):
     gene_id = 1
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
+        not_completed_jobs.sort(key=lambda x: x.process_time)  # 짧은 순으로 배치
+
         for job in not_completed_jobs:
-            mach = list(filter(lambda x:x.work_speed_list[job.id-1]!= 0,mach_list)) # 작업 가능 머신 list
+            mach = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))  # 작업 가능 머신 list
             mach = min(mach, key=lambda x: (x.avail_time + job.process_time / x.work_speed_list[job.id - 1]))
             setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
             if mach.work_speed_list[job.id - 1] != 0:
@@ -53,7 +56,8 @@ def match(instance, job_list, mach_list, seed, sch_list):
                 gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
-                sch_list.append([mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time]) # 스케줄 리스트
+                sch_list.append(
+                    [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
 
     return instance, mach_list, job_list, sch_list
 
@@ -72,5 +76,3 @@ def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판
                 mach[0].avail_matrix[i] = True
 
     return mach_list
-
-

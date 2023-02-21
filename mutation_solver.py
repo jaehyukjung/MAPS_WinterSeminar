@@ -44,7 +44,7 @@ def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, chromo_id_list, n, ch_id,sch_list):
+def match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list):
     gene_id = 1
 
     while any(job.done is False for job in job_list):

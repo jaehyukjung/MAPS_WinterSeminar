@@ -2,6 +2,7 @@ from module import *
 import numpy as np
 import random
 
+
 def min_setup_solver(instance: Prob_Instance, seed):
     print('Solver Start')
     solution = {}
@@ -42,19 +43,38 @@ def min_setup_solver(instance: Prob_Instance, seed):
 def match(instance, job_list, mach_list, seed, sch_list):
     random.seed(seed)
     gene_id = 1
-    while any(job.done is False for job in job_list):
-        not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
-        for job in not_completed_jobs:
-            mach = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))
-            #mach = list(filter(lambda x: x.setup_status==job.setup,mach_list))
-            mach = min(mach, key=lambda x: (x.avail_time + x.get_setup_time(previousJob=x.setup_status, currentJob=job)))
-            setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
-            if mach.work_speed_list[job.id - 1] != 0:
-                mach.work(job)
-                gene = Gene(gene_id, job, mach)
-                instance.chromo.setChromo(gene.getGene())
-                gene_id += 1
-                sch_list.append([mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time]) # 스케줄 리스트
+
+    for status in STATUSLIST:
+        not_completed_jobs = list(filter(lambda x: x.setup == status, job_list))
+        if not not_completed_jobs:
+            continue
+
+        status_mach_list = list(filter(lambda x: x.setup_status == status, mach_list))
+        if not status_mach_list:
+            avail_mach_list = list(filter(lambda x: x.avail_matrix[status] == True, mach_list))
+            avail_mach_list.sort(key=lambda x: sum(x.work_speed_list), reverse=True)
+            mach = avail_mach_list[0]
+            for job in not_completed_jobs:
+                setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
+                if mach.work_speed_list[job.id - 1] != 0:
+                    mach.work(job)
+                    gene = Gene(gene_id, job, mach)
+                    instance.chromo.setChromo(gene.getGene())
+                    gene_id += 1
+                    sch_list.append(
+                        [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
+        else:
+            for job in not_completed_jobs:
+                mach = min(status_mach_list,
+                           key=lambda x: (x.avail_time + x.get_setup_time(previousJob=x.setup_status, currentJob=job)))
+                setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
+                if mach.work_speed_list[job.id - 1] != 0:
+                    mach.work(job)
+                    gene = Gene(gene_id, job, mach)
+                    instance.chromo.setChromo(gene.getGene())
+                    gene_id += 1
+                    sch_list.append(
+                        [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
 
     return instance, mach_list, job_list, sch_list
 
@@ -73,5 +93,3 @@ def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판
                 mach[0].avail_matrix[i] = True
 
     return mach_list
-
-

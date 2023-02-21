@@ -6,6 +6,7 @@ from gantt_chart import *
 from spt_solver import *
 from min_setup_solver import *
 
+
 def random_LoadProb(id: int) -> Prob_Instance:
     random.seed(100)
     random_job = 15
@@ -63,18 +64,19 @@ if __name__ == "__main__":
         population = sorted(population, key=lambda x: x[0].objective)[:100]
     ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
 
-    # for i in range(1,10):
-    #     Sample = random_LoadProb(i)
-    #     mach_setup = [[i.setup_status] for i in Sample.machine_list]
-    #     Solution, chromo, mach_list, sch_list = spt_solver(Sample, i)
-    #     population.append((chromo, Solution, sch_list))
-    #     print('Sum of Comepletion Time is ' + str(Solution['Objective']))
-    #     ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
-
-    # for i in range(1,10):
-    #     Sample = random_LoadProb(i)
-    #     mach_setup = [[i.setup_status] for i in Sample.machine_list]
-    #     Solution, chromo, mach_list, sch_list = min_setup_solver(Sample, i)
-    #     population.append((chromo, Solution, sch_list))
-    #     print('Sum of Comepletion Time is ' + str(Solution['Objective']))
-    #     ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+    population = []
+    for i in range(1):
+        Sample = random_LoadProb(i)
+        mach_setup = [[i.setup_status] for i in Sample.machine_list]
+        Solution, chromo, mach_list, sch_list = spt_solver(Sample, i)
+        population.append((chromo, Solution, sch_list))
+        print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+        ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+    population = []
+    for i in range(1):
+        Sample = random_LoadProb(i)
+        mach_setup = [[i.setup_status] for i in Sample.machine_list]
+        Solution, chromo, mach_list, sch_list = min_setup_solver(Sample, i)
+        population.append((chromo, Solution, sch_list))
+        print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+        ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
