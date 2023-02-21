@@ -34,8 +34,8 @@ def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
     # solver
     instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list)
 
-    for mach in mach_list:
-        total_CompletionTime += mach.avail_time
+    for job in job_list:
+        total_CompletionTime += job.end_time
 
     instance.chromo.objective = total_CompletionTime
     solution['Objective'] = []

@@ -3,7 +3,8 @@ from solver import *
 from mutation_solver import *
 from crossover_solver import *
 from gantt_chart import *
-
+from spt_solver import *
+from min_setup_solver import *
 
 def random_LoadProb(id: int) -> Prob_Instance:
     random.seed(100)
@@ -14,7 +15,7 @@ def random_LoadProb(id: int) -> Prob_Instance:
     copiedProb = copy.deepcopy(ThisProb)
     ThisProb.chromo = Chromosome(id)
     for i in range(random_job):
-        ThisProb.job_list.append(Job(i + 1, random.randint(2, 8), random.randint(6, 14), random.randint(1, 3),
+        ThisProb.job_list.append(Job(i + 1, random.uniform(30, 60), random.randint(6, 14), random.randint(1, 3),
                                      random.randint(0, 2), random.choice(STATUSLIST)))
     for i in range(random_machine):
         ThisProb.machine_list.append(Machine(i + 1, random.choice(STATUSLIST)))
@@ -60,4 +61,20 @@ if __name__ == "__main__":
             print('Sum of Comepletion Time is ' + str(Solution['Objective']))
 
         population = sorted(population, key=lambda x: x[0].objective)[:100]
-        ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+    ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+
+    # for i in range(1,10):
+    #     Sample = random_LoadProb(i)
+    #     mach_setup = [[i.setup_status] for i in Sample.machine_list]
+    #     Solution, chromo, mach_list, sch_list = spt_solver(Sample, i)
+    #     population.append((chromo, Solution, sch_list))
+    #     print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+    #     ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+
+    # for i in range(1,10):
+    #     Sample = random_LoadProb(i)
+    #     mach_setup = [[i.setup_status] for i in Sample.machine_list]
+    #     Solution, chromo, mach_list, sch_list = min_setup_solver(Sample, i)
+    #     population.append((chromo, Solution, sch_list))
+    #     print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+    #     ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
