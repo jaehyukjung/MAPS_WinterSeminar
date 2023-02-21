@@ -2,7 +2,7 @@ import copy
 import random
 import numpy as np
 
-STATUSLIST = [0, 1, 2]
+STATUSLIST = [0, 1, 2, 3]
 STATUSNUM = len(STATUSLIST)
 
 
@@ -25,13 +25,14 @@ class Prob_Instance:
 
 
 class Job:  # 입력 데이터: job (요청)
-    def __init__(self, ID: int, Process_time, Due_date, Weight, Release_time, Setup_Status: int):
+    def __init__(self, ID: int, Process_time: int, Due_date: int, Weight: int, Release_time: int, Setup_Status: int):
         self.id = ID
         self.process_time = Process_time
         self.due_date = Due_date
         self.release_date = Release_time
         self.setup = Setup_Status
         self.weight = Weight  # 가중치
+        self.end_time = 0
 
     def initialize(self):
         self.done = False
@@ -74,6 +75,7 @@ class Machine:  # 작업 기계
         self.start_time = self.avail_time  # set -> setup 후
         target.start_time = self.start_time
         self.avail_time += self.work_time  # 완료시간
+        target.end_time = self.avail_time
         target.tardiness = max(0, self.avail_time - target.due_date)
         self.measures['total_tardiness'] += target.tardiness
         self.measures['makespan'] = self.avail_time
@@ -99,8 +101,8 @@ class Machine:  # 작업 기계
 
 
 def set_setup_matrtix():  # 각 작업별 setup_time_matrix
-    np.random.seed(666)
-    setup_matrix = np.random.randint(1, 4, size=(STATUSNUM, STATUSNUM))
+    np.random.seed(42)
+    setup_matrix = np.random.uniform(10, 30, size=(STATUSNUM, STATUSNUM))
     setup_matrix = np.triu(setup_matrix)
     setup_matrix += setup_matrix.T - np.diag(setup_matrix.diagonal())
     setup_matrix = [[0 if i == j else setup_matrix[i][j] for j in range(STATUSNUM)] for i in range(STATUSNUM)]
@@ -131,7 +133,7 @@ def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판
 
 
 class Gene:
-    def __init__(self, id, job, mach):
+    def __init__(self, id: int, job, mach):
         self.id = id
         self.job = job
         self.mach = mach

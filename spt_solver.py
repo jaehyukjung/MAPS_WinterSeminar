@@ -2,7 +2,7 @@ from module import *
 import numpy as np
 import random
 
-def rule_solver(instance: Prob_Instance, seed):
+def spt_solver(instance: Prob_Instance, seed):
     print('Solver Start')
     solution = {}
     solution["Problem"] = instance.deepcopy()
@@ -41,20 +41,19 @@ def rule_solver(instance: Prob_Instance, seed):
 
 def match(instance, job_list, mach_list, seed, sch_list):
     random.seed(seed)
-
     gene_id = 1
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
         for job in not_completed_jobs:
-            mach = random.choice(mach_list)
-            cur = job
-            setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=cur)
+            mach = list(filter(lambda x:x.work_speed_list[job.id-1]!= 0,mach_list)) # 작업 가능 머신 list
+            mach = min(mach, key=lambda x: (x.avail_time + job.process_time / x.work_speed_list[job.id - 1]))
+            setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
             if mach.work_speed_list[job.id - 1] != 0:
                 mach.work(job)
                 gene = Gene(gene_id, job, mach)
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
-                sch_list.append([mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time]) # 스케줄 리스트
+                sch_list.append([mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time]) # 스케줄 리스트
 
     return instance, mach_list, job_list, sch_list
 
