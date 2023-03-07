@@ -53,6 +53,7 @@ if __name__ == "__main__":
             Solution, chromo, mach_list, sch_list = cross_solver(Sample, i, population[i][0], population[i + 1][0])
             population.append((chromo, Solution, sch_list))
             print('Sum of Comepletion Time is ' + str(Solution['Objective']))
+            # ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
 
         for i in range(100):  # random population 생성
             Sample = random_LoadProb(i)
@@ -62,7 +63,6 @@ if __name__ == "__main__":
             print('Sum of Comepletion Time is ' + str(Solution['Objective']))
 
         population = sorted(population, key=lambda x: x[0].objective)[:100]
-    ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
 
     population = []
     for i in range(1):
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         Solution, chromo, mach_list, sch_list = spt_solver(Sample, i)
         population.append((chromo, Solution, sch_list))
         print('Sum of Comepletion Time is ' + str(Solution['Objective']))
-        ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+        # ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
     population = []
     for i in range(1):
         Sample = random_LoadProb(i)
@@ -79,4 +79,4 @@ if __name__ == "__main__":
         Solution, chromo, mach_list, sch_list = min_setup_solver(Sample, i)
         population.append((chromo, Solution, sch_list))
         print('Sum of Comepletion Time is ' + str(Solution['Objective']))
-        ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
+        # ganttChart(population[0][2], population[0][1], mach_setup)  # 제일 좋은 결과값 간트 차트
