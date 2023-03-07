@@ -1,7 +1,7 @@
 from module import *
 import numpy as np
 import random
-
+import pandas as pd
 
 def min_setup_solver(instance: Prob_Instance, seed):
     print('Solver Start')
@@ -43,7 +43,8 @@ def min_setup_solver(instance: Prob_Instance, seed):
 def match(instance, job_list, mach_list, seed, sch_list):
     random.seed(seed)
     gene_id = 1
-
+    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time']
+    df = pd.DataFrame(columns=sch_columns)
     for status in STATUSLIST:
         not_completed_jobs = list(filter(lambda x: x.setup == status, job_list))
         if not not_completed_jobs:
@@ -63,6 +64,9 @@ def match(instance, job_list, mach_list, seed, sch_list):
                     gene_id += 1
                     sch_list.append(
                         [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
+                    row_df = pd.DataFrame(sch_list, columns=sch_columns)
+                    row_df.transpose()
+                    df = df.append(row_df, ignore_index=True)
         else:
             for job in not_completed_jobs:
                 mach = min(status_mach_list,
@@ -76,7 +80,7 @@ def match(instance, job_list, mach_list, seed, sch_list):
                     sch_list.append(
                         [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
 
-    return instance, mach_list, job_list, sch_list
+    return instance, mach_list, job_list, df
 
 
 def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판단 -> 모든 셋업에 True가 포함 돼 있는지 확인 없다면 변경

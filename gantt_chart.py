@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 
-def ganttChart(sch_list, Solution,mach_setup):
+def ganttChart(sch_list, Solution, mach_setup):
     mch = [list(filter(lambda x: x[2]==i, sch_list)) for i in range(1,6)]
     set_lst = mach_setup
 
@@ -18,7 +18,8 @@ def ganttChart(sch_list, Solution,mach_setup):
         word.append(word1)
 
     sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status','setup_time']
-    df = [pd.DataFrame(mch[i], columns=sch_columns) for i in range(5)]
+    df1 = [pd.DataFrame(mch[i], columns=sch_columns) for i in range(5)]
+    df =sch_list
 
     setup = []
     for i in range(len(df)):

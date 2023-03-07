@@ -1,7 +1,7 @@
 from module import *
 import numpy as np
 import random
-
+import pandas as pd
 
 def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
     print('Solver Start')
@@ -49,6 +49,8 @@ def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
 
 def match(instance, job_list, mach_list, chromo_id_list, sch_list):
     gene_id = 1
+    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time']
+    df = pd.DataFrame(columns=sch_columns)
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
 
@@ -63,8 +65,11 @@ def match(instance, job_list, mach_list, chromo_id_list, sch_list):
                 gene_id += 1
                 sch_list.append(
                     [mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time])  # 스케줄 리스트
+                row_df = pd.DataFrame(sch_list, columns=sch_columns)
+                row_df.transpose()
+                df = df.append(row_df, ignore_index=True)
 
-    return instance, mach_list, job_list, sch_list
+    return instance, mach_list, job_list, df
 
 
 def mach_match(job, mach_list, chromo_id_list):
