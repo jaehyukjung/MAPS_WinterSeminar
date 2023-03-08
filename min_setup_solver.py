@@ -1,10 +1,9 @@
 from module import *
 import numpy as np
-import random
 import pandas as pd
 
 def min_setup_solver(instance: Prob_Instance, seed):
-    print('Solver Start')
+    print('MIN_SETUP Solver Start')
     solution = {}
     solution["Problem"] = instance.deepcopy()
     total_CompletionTime = 0
@@ -28,7 +27,7 @@ def min_setup_solver(instance: Prob_Instance, seed):
         mach_set.append(mach.setup_status)
 
     # solver
-    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, seed, sch_list)
+    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, sch_list)
 
     for job in job_list:
         total_CompletionTime += job.end_time
@@ -40,10 +39,9 @@ def min_setup_solver(instance: Prob_Instance, seed):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, seed, sch_list):
-    random.seed(seed)
+def match(instance, job_list, mach_list,  sch_list):
     gene_id = 1
-    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time']
+    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time','dicision_point']
     df = pd.DataFrame(columns=sch_columns)
     for status in STATUSLIST:
         not_completed_jobs = list(filter(lambda x: x.setup == status, job_list))
@@ -52,8 +50,11 @@ def match(instance, job_list, mach_list, seed, sch_list):
 
         status_mach_list = list(filter(lambda x: x.setup_status == status, mach_list))
         if not status_mach_list:
-            avail_mach_list = list(filter(lambda x: x.avail_matrix[status] == True, mach_list))
+            avail_mach_list = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))
+            avail_mach_list.sort(key=lambda x: x.avail_time)
+            dicision_point = avail_mach_list[0].avail_time
             avail_mach_list.sort(key=lambda x: sum(x.work_speed_list), reverse=True)
+
             mach = avail_mach_list[0]
             for job in not_completed_jobs:
                 setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
@@ -63,10 +64,10 @@ def match(instance, job_list, mach_list, seed, sch_list):
                     instance.chromo.setChromo(gene.getGene())
                     gene_id += 1
                     sch_list.append(
-                        [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
+                        [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
                     row_df = pd.DataFrame(sch_list, columns=sch_columns)
                     row_df.transpose()
-                    df = df.append(row_df, ignore_index=True)
+                    df = pd.concat([df,row_df])
         else:
             for job in not_completed_jobs:
                 mach = min(status_mach_list,

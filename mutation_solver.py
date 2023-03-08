@@ -4,7 +4,7 @@ import random
 import pandas as pd
 
 def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
-    print('Solver Start')
+    # print('Solver Start')
     solution = {}
     solution["Problem"] = instance.deepcopy()
     total_CompletionTime = 0
@@ -46,12 +46,15 @@ def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
 
 def match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list):
     gene_id = 1
-    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time']
+    sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time','dicision_point']
     df = pd.DataFrame(columns=sch_columns)
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
 
         for job in not_completed_jobs:
+            avail_mach_list = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))
+            avail_mach_list.sort(key=lambda x: x.avail_time)
+            dicision_point = avail_mach_list[0].avail_time
             mach = mach_match(job, mach_list, chromo_id_list)
             cur = job
             sch_list = []
@@ -62,10 +65,10 @@ def match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list):
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
                 sch_list.append(
-                    [mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time])  # 스케줄 리스트
+                    [mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
                 row_df = pd.DataFrame(sch_list, columns=sch_columns)
                 row_df.transpose()
-                df = df.append(row_df, ignore_index=True)
+                df = pd.concat([df,row_df])
             else:
                 if job.id == ch_id:
                     chromo_id_list[n][1] = random.randint(1, len(mach_list))

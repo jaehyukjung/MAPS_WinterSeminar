@@ -5,7 +5,6 @@ import numpy as np
 STATUSLIST = [0, 1, 2, 3]
 STATUSNUM = len(STATUSLIST)
 
-
 class Prob_Instance:
     def __init__(self):
         self.objective = 'Makespan'
@@ -82,7 +81,7 @@ class Machine:  # 작업 기계
         self.served_job.append(target.id)
 
     def set_avail_matrix(self):  # Job에 대한 기계의 작업 가능 여부(Mj)
-        random.seed(42)
+        random.seed(100)
         self.avail_matrix = [random.choice([True, False]) for i in range(STATUSNUM)]
         if True not in self.avail_matrix:
             self.avail_matrix[random.randint(0, 2)] = True
@@ -100,8 +99,8 @@ class Machine:  # 작업 기계
         return str('Machine # ' + str(self.id))
 
 
-def set_setup_matrtix():  # 각 작업별 setup_time_matrix
-    np.random.seed(42)
+def set_setup_matrix():  # 각 작업별 setup_time_matrix
+    np.random.seed(100)
     setup_matrix = np.random.uniform(10, 30, size=(STATUSNUM, STATUSNUM))
     setup_matrix = np.triu(setup_matrix)
     setup_matrix += setup_matrix.T - np.diag(setup_matrix.diagonal())
