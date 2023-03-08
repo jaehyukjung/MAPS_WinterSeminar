@@ -26,9 +26,9 @@ def spt_solver(instance: Prob_Instance, seed):
     for mach in mach_list:
         mach.set_time_matrix = setup_matrix
         mach_set.append(mach.setup_status)
-
+    Prob_dic = {'instance': instance, 'job_list': job_list, 'mach_list': mach_list}
     # solver
-    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, sch_list)
+    sch_list = match(Prob_dic)
 
     for job in job_list:
         total_CompletionTime += job.end_time
@@ -40,13 +40,15 @@ def spt_solver(instance: Prob_Instance, seed):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, sch_list):
+def match(prob_dic):
+    instance, job_list, mach_list = prob_dic['instance'], prob_dic['job_list'], prob_dic['mach_list']
     gene_id = 1
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
         not_completed_jobs.sort(key=lambda x: x.process_time)  # 짧은 순으로 배치
 
         for job in not_completed_jobs:
+            sch_list = []
             mach = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))  # 작업 가능 머신 list
             mach.sort(key=lambda x: x.avail_time)
             dicision_point = mach[0].avail_time
@@ -60,7 +62,7 @@ def match(instance, job_list, mach_list, sch_list):
                 sch_list.append(
                     [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
 
-    return instance, mach_list, job_list, sch_list
+    return sch_list
 
 
 def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판단 -> 모든 셋업에 True가 포함 돼 있는지 확인 없다면 변경
