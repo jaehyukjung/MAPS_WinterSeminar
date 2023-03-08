@@ -7,7 +7,6 @@ def min_setup_solver(instance: Prob_Instance, seed):
     solution = {}
     solution["Problem"] = instance.deepcopy()
     total_CompletionTime = 0
-    sch_list = []
 
     job_list = instance.job_list
     job: Job
@@ -25,9 +24,9 @@ def min_setup_solver(instance: Prob_Instance, seed):
     for mach in mach_list:
         mach.set_time_matrix = setup_matrix
         mach_set.append(mach.setup_status)
-
+    Prob_dic = {'instance': instance, 'job_list': job_list, 'mach_list': mach_list}
     # solver
-    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, sch_list)
+    sch_list = match(Prob_dic)
 
     for job in job_list:
         total_CompletionTime += job.end_time
@@ -39,10 +38,12 @@ def min_setup_solver(instance: Prob_Instance, seed):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list,  sch_list):
+def match(prob_dic):
+    instance, job_list, mach_list = prob_dic['instance'], prob_dic['job_list'], prob_dic['mach_list']
     gene_id = 1
     sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time','dicision_point']
-    df = pd.DataFrame(columns=sch_columns)
+    sch_df = pd.DataFrame(columns=sch_columns)
+
     for status in STATUSLIST:
         not_completed_jobs = list(filter(lambda x: x.setup == status, job_list))
         if not not_completed_jobs:
@@ -57,6 +58,7 @@ def match(instance, job_list, mach_list,  sch_list):
 
             mach = avail_mach_list[0]
             for job in not_completed_jobs:
+                sch_list = []
                 setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
                 if mach.work_speed_list[job.id - 1] != 0:
                     mach.work(job)
@@ -67,9 +69,10 @@ def match(instance, job_list, mach_list,  sch_list):
                         [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
                     row_df = pd.DataFrame(sch_list, columns=sch_columns)
                     row_df.transpose()
-                    df = pd.concat([df,row_df])
+                    sch_df = pd.concat([sch_df,row_df])
         else:
             for job in not_completed_jobs:
+                sch_list = []
                 mach = min(status_mach_list,
                            key=lambda x: (x.avail_time + x.get_setup_time(previousJob=x.setup_status, currentJob=job)))
                 setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
@@ -81,7 +84,7 @@ def match(instance, job_list, mach_list,  sch_list):
                     sch_list.append(
                         [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
 
-    return instance, mach_list, job_list, df
+    return sch_df
 
 
 def check_avail(mach_list: list):  # 사용 가능한 머신 리스트인지 판단 -> 모든 셋업에 True가 포함 돼 있는지 확인 없다면 변경

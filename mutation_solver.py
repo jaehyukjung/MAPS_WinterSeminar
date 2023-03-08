@@ -8,7 +8,7 @@ def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
     solution = {}
     solution["Problem"] = instance.deepcopy()
     total_CompletionTime = 0
-    sch_list = []
+
 
     job_list = instance.job_list
     job: Job
@@ -30,9 +30,9 @@ def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
     chromo_id_list = chromo.getId_list()
     chromo_id_list, n = change_chromo(chromo_id_list, job_list, mach_list, seed)
     ch_id = chromo_id_list[n][0]
-
+    Prob_dic = {'instance': instance, 'job_list': job_list, 'mach_list': mach_list}
     # solver
-    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list)
+    sch_list = match(Prob_dic, chromo_id_list, n, ch_id)
 
     for job in job_list:
         total_CompletionTime += job.end_time
@@ -44,10 +44,12 @@ def mut_solver(instance: Prob_Instance, seed, chromo: Chromosome):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list):
+def match(prob_dic, chromo_id_list, n, ch_id):
+    instance, job_list, mach_list = prob_dic['instance'], prob_dic['job_list'], prob_dic['mach_list']
     gene_id = 1
     sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time','dicision_point']
-    df = pd.DataFrame(columns=sch_columns)
+    sch_df = pd.DataFrame(columns=sch_columns)
+
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
 
@@ -68,12 +70,12 @@ def match(instance, job_list, mach_list, chromo_id_list, n, ch_id, sch_list):
                     [mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
                 row_df = pd.DataFrame(sch_list, columns=sch_columns)
                 row_df.transpose()
-                df = pd.concat([df,row_df])
+                sch_df = pd.concat([sch_df,row_df])
             else:
                 if job.id == ch_id:
                     chromo_id_list[n][1] = random.randint(1, len(mach_list))
 
-    return instance, mach_list, job_list, df
+    return sch_df
 
 
 def mach_match(job, mach_list, chromo_id_list):

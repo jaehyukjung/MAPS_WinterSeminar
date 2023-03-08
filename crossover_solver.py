@@ -8,7 +8,7 @@ def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
     solution = {}
     solution["Problem"] = instance.deepcopy()
     total_CompletionTime = 0
-    sch_list = []
+
 
     job_list = instance.job_list
     job: Job
@@ -31,9 +31,9 @@ def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
     chromo_id_list1 = chromo1.getId_list()
     chromo_id_list2 = chromo2.getId_list()
     chromo_id_list = cross_chromo(chromo_id_list1, chromo_id_list2)
-
+    Prob_dic = {'instance': instance, 'job_list': job_list, 'mach_list':mach_list}
     # solver
-    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, chromo_id_list, sch_list)
+    sch_list = match(Prob_dic, chromo_id_list)
 
     for job in job_list:
         total_CompletionTime += job.end_time
@@ -47,14 +47,17 @@ def cross_solver(instance: Prob_Instance, seed, chromo1, chromo2):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, chromo_id_list, sch_list):
+def match(prob_dic, chromo_id_list):
+    instance, job_list, mach_list = prob_dic['instance'],prob_dic['job_list'],prob_dic['mach_list']
     gene_id = 1
     sch_columns = ['start_time', 'end_time', 'machine_ID', 'job_ID', 'setup_status', 'setup_time','dicision_point']
-    df = pd.DataFrame(columns=sch_columns)
+    sch_df = pd.DataFrame(columns=sch_columns)
+
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
 
         for job in not_completed_jobs:
+            sch_list = []
             avail_mach_list = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))
             avail_mach_list.sort(key=lambda x: x.avail_time)
             dicision_point = avail_mach_list[0].avail_time
@@ -70,9 +73,9 @@ def match(instance, job_list, mach_list, chromo_id_list, sch_list):
                     [mach.start_time, mach.avail_time, mach.id, cur.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
                 row_df = pd.DataFrame(sch_list, columns=sch_columns)
                 row_df.transpose()
-                df = pd.concat([df,row_df])
+                sch_df = pd.concat([sch_df,row_df])
 
-    return instance, mach_list, job_list, df
+    return sch_df
 
 
 def mach_match(job, mach_list, chromo_id_list):
