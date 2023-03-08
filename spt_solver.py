@@ -4,7 +4,7 @@ import random
 
 
 def spt_solver(instance: Prob_Instance, seed):
-    print('Solver Start')
+    print('SPT Solver Start')
     solution = {}
     solution["Problem"] = instance.deepcopy()
     total_CompletionTime = 0
@@ -28,7 +28,7 @@ def spt_solver(instance: Prob_Instance, seed):
         mach_set.append(mach.setup_status)
 
     # solver
-    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, seed, sch_list)
+    instance, mach_list, job_list, sch_list = match(instance, job_list, mach_list, sch_list)
 
     for job in job_list:
         total_CompletionTime += job.end_time
@@ -40,8 +40,7 @@ def spt_solver(instance: Prob_Instance, seed):
     return solution, instance.chromo, mach_list, sch_list
 
 
-def match(instance, job_list, mach_list, seed, sch_list):
-    random.seed(seed)
+def match(instance, job_list, mach_list, sch_list):
     gene_id = 1
     while any(job.done is False for job in job_list):
         not_completed_jobs = list(filter(lambda x: x.done is False, job_list))
@@ -49,6 +48,8 @@ def match(instance, job_list, mach_list, seed, sch_list):
 
         for job in not_completed_jobs:
             mach = list(filter(lambda x: x.work_speed_list[job.id - 1] != 0, mach_list))  # 작업 가능 머신 list
+            mach.sort(key=lambda x: x.avail_time)
+            dicision_point = mach[0].avail_time
             mach = min(mach, key=lambda x: (x.avail_time + job.process_time / x.work_speed_list[job.id - 1]))
             setup_time = mach.get_setup_time(previousJob=mach.setup_status, currentJob=job)
             if mach.work_speed_list[job.id - 1] != 0:
@@ -57,7 +58,7 @@ def match(instance, job_list, mach_list, seed, sch_list):
                 instance.chromo.setChromo(gene.getGene())
                 gene_id += 1
                 sch_list.append(
-                    [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time])  # 스케줄 리스트
+                    [mach.start_time, mach.avail_time, mach.id, job.id, mach.setup_status, setup_time,dicision_point])  # 스케줄 리스트
 
     return instance, mach_list, job_list, sch_list
 
